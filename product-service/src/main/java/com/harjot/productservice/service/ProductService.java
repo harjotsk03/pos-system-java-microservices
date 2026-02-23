@@ -7,6 +7,7 @@ import com.harjot.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class ProductService {
         );
     }
 
-    public ProductResponse getProductById(Long id) {
+    public ProductResponse getProductById(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found: " + id));
         return toResponse(product);

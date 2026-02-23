@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/product")
@@ -23,7 +24,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductResponse getProduct(@PathVariable Long id) {
+    public ProductResponse getProduct(@PathVariable UUID id) {
         return productService.getProductById(id);
     }
 

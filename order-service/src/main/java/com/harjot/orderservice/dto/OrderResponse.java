@@ -6,11 +6,12 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 public class OrderResponse {
-    private Long id;
+    private UUID id;
     private String idempotencyKey;
     private BigDecimal totalAmount;
     private String status;

@@ -10,6 +10,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
 
   product-db:
     image: postgres:15
@@ -20,6 +22,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5434:5432"
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
 
   order-db:
     image: postgres:15
@@ -30,3 +34,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5435:5432"
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+
+volumes:
+  auth-db-data:
+  product-db-data:
+  order-db-data:

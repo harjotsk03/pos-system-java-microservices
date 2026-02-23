@@ -1,5 +1,7 @@
 # Order Service – Testing
 
+**IDs are UUIDs.** Use UUID strings for `productId` in order items and for order `id` in URLs (e.g. `GET /orders/550e8400-e29b-41d4-a716-446655440000`).
+
 ## 1. Run unit tests
 
 ```bash
@@ -32,50 +34,42 @@ Service will be at **http://localhost:8083**.
 
 ### Create an order (first time – 201 Created)
 
+Use UUIDs for `productId` (from product-service). Example:
+
 ```bash
 curl -s -X POST http://localhost:8083/orders \
   -H "Content-Type: application/json" \
   -d '{
     "idempotencyKey": "test-order-001",
     "items": [
-      { "productId": 1, "quantity": 2, "price": 9.99 },
-      { "productId": 2, "quantity": 1, "price": 14.50 }
+      { "productId": "550e8400-e29b-41d4-a716-446655440000", "quantity": 2, "price": 9.99 },
+      { "productId": "6ba7b810-9dad-11d1-80b4-00c04fd430c8", "quantity": 1, "price": 14.50 }
     ]
   }' | jq .
 ```
 
-Note the returned `id` (e.g. `1`).
+Note the returned `id` (UUID).
 
 ### Idempotency – same key again (200 OK, same order)
 
-Send the **same** request again (same `idempotencyKey`):
-
-```bash
-curl -s -X POST http://localhost:8083/orders \
-  -H "Content-Type: application/json" \
-  -d '{
-    "idempotencyKey": "test-order-001",
-    "items": [
-      { "productId": 1, "quantity": 2, "price": 9.99 },
-      { "productId": 2, "quantity": 1, "price": 14.50 }
-    ]
-  }' | jq .
-```
-
-You should get the **same** `id` and body as the first call (no duplicate order).
+Send the **same** request again (same `idempotencyKey`); you should get the **same** `id` and body (no duplicate order).
 
 ### Get order by ID
 
 ```bash
-curl -s http://localhost:8083/orders/1 | jq .
+curl -s http://localhost:8083/orders/<order-uuid> | jq .
 ```
-
-Replace `1` with the `id` from the create response.
 
 ### Confirm order (PENDING → CONFIRMED)
 
 ```bash
-curl -s -X POST http://localhost:8083/orders/1/confirm | jq .
+curl -s -X POST http://localhost:8083/orders/<order-uuid>/confirm | jq .
 ```
 
-Replace `1` with the order `id`. Response will have `"status": "CONFIRMED"`. Only PENDING orders can be confirmed.
+Response will have `"status": "CONFIRMED"`. Only PENDING orders can be confirmed.
+
+---
+
+## Via API Gateway (port 8080)
+
+If the API gateway is running, use the same paths with prefix `http://localhost:8080/api` (e.g. `POST http://localhost:8080/api/orders`). The gateway rewrites to the order-service.

@@ -1,6 +1,7 @@
 package com.harjot.productservice.dto;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +9,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ProductResponse {
-    private Long id;
+    private UUID id;
     private String sku;
     private String name;
     private String description;

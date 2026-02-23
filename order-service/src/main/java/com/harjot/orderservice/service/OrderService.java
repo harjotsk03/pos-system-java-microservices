@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,14 +75,14 @@ public class OrderService {
         }
     }
 
-    public OrderResponse getOrderById(Long id) {
+    public OrderResponse getOrderById(UUID id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + id));
         return OrderResponse.from(order);
     }
 
     @Transactional
-    public OrderResponse confirmOrder(Long id) {
+    public OrderResponse confirmOrder(UUID id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + id));
         if (order.getStatus() != OrderStatus.PENDING) {

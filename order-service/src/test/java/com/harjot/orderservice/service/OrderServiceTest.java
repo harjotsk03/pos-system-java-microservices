@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +37,7 @@ class OrderServiceTest {
     void createOrder_createsNewOrder_whenIdempotencyKeyIsNew() {
         String idempotencyKey = "order-uuid-123";
         OrderItemRequest item = new OrderItemRequest();
-        item.setProductId(1L);
+        item.setProductId(UUID.randomUUID());
         item.setQuantity(2);
         item.setPrice(new BigDecimal("9.99"));
         CreateOrderRequest request = createRequest(idempotencyKey, List.of(item));
@@ -44,10 +45,10 @@ class OrderServiceTest {
         when(orderRepository.findByIdempotencyKey(idempotencyKey)).thenReturn(Optional.empty());
         when(orderRepository.save(any(Order.class))).thenAnswer(inv -> {
             Order o = inv.getArgument(0);
-            o.setId(1L);
+            o.setId(UUID.randomUUID());
             if (o.getItems() != null) {
                 for (int i = 0; i < o.getItems().size(); i++) {
-                    o.getItems().get(i).setId((long) (i + 1));
+                    o.getItems().get(i).setId(UUID.randomUUID());
                 }
             }
             return o;
@@ -66,15 +67,16 @@ class OrderServiceTest {
     @Test
     void createOrder_returnsExistingOrder_whenIdempotencyKeyAlreadyUsed() {
         String idempotencyKey = "duplicate-key-456";
+        UUID orderId = UUID.randomUUID();
         OrderItemRequest item = new OrderItemRequest();
-        item.setProductId(1L);
+        item.setProductId(UUID.randomUUID());
         item.setQuantity(1);
         item.setPrice(new BigDecimal("10.00"));
         CreateOrderRequest request = createRequest(idempotencyKey, List.of(item));
 
-        OrderItem orderItem = OrderItem.builder().id(1L).productId(1L).quantity(1).price(new BigDecimal("10.00")).build();
+        OrderItem orderItem = OrderItem.builder().id(UUID.randomUUID()).productId(item.getProductId()).quantity(1).price(new BigDecimal("10.00")).build();
         Order existingOrder = Order.builder()
-                .id(99L)
+                .id(orderId)
                 .idempotencyKey(idempotencyKey)
                 .totalAmount(new BigDecimal("10.00"))
                 .status(OrderStatus.PENDING)
@@ -87,8 +89,8 @@ class OrderServiceTest {
         OrderResponse response = orderService.createOrder(request);
 
         assertThat(response).isNotNull();
-        assertThat(response.getId()).isEqualTo(99L);
-        assertThat(response.getIdempotencyKey()).isEqualTo(idempotencyKey);
+        assertThat(response.getId()).isEqualTo(orderId);
+            assertThat(response.getIdempotencyKey()).isEqualTo(idempotencyKey);
         verify(orderRepository, never()).save(any(Order.class));
     }
 

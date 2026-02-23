@@ -5,12 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 public class OrderItemRequest {
 
     @NotNull(message = "productId is required")
-    private Long productId;
+    private UUID productId;
 
     @NotNull(message = "quantity is required")
     @Min(value = 1, message = "quantity must be at least 1")

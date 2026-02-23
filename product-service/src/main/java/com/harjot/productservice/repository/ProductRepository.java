@@ -2,8 +2,10 @@ package com.harjot.productservice.repository;
 
 import com.harjot.productservice.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
+import java.util.Optional;
+import java.util.UUID;
+
+public interface ProductRepository extends JpaRepository<Product, UUID> {
     Optional<Product> findBySku(String sku);
 }

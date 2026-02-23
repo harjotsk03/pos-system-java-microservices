@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public OrderResponse getOrder(@PathVariable Long id) {
+    public OrderResponse getOrder(@PathVariable UUID id) {
         return orderService.getOrderById(id);
     }
 
@@ -40,7 +42,7 @@ public class OrderController {
      * Confirm an order (PENDING → CONFIRMED). Fails if order is not PENDING.
      */
     @PostMapping("/{id}/confirm")
-    public OrderResponse confirmOrder(@PathVariable Long id) {
+    public OrderResponse confirmOrder(@PathVariable UUID id) {
         return orderService.confirmOrder(id);
     }
 }
